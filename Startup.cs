@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using HomeLibrary.Models;
+using HomeLibrary.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace HomeLibrary
 {
@@ -31,7 +33,10 @@ namespace HomeLibrary
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+            {
+                config.SignIn.RequireConfirmedEmail = true;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -42,6 +47,12 @@ namespace HomeLibrary
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            services.Configure<DataProtectionTokenProviderOptions>(options =>{
+                options.TokenLifespan = TimeSpan.FromDays(1);
+            });
+
+            services.AddTransient<IEmailSender, MailKitEmailSender>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

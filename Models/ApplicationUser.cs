@@ -8,5 +8,6 @@ namespace HomeLibrary.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        public DateTime RegisterDate {get;set;}
     }
 }

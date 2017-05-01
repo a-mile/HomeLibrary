@@ -11,6 +11,12 @@ using Microsoft.AspNetCore.Authorization;
 using HomeLibrary.Models;
 using HomeLibrary.Services;
 using Microsoft.AspNetCore.Identity;
+using Hangfire;
+using Hangfire.MemoryStorage;
+using Autofac;
+using System.Reflection;
+using Autofac.Extensions.DependencyInjection;
+using HomeLibrary.Infrastructure;
 
 namespace HomeLibrary
 {
@@ -28,7 +34,9 @@ namespace HomeLibrary
 
         public IConfigurationRoot Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IContainer ApplicationContainer { get; private set; }
+
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
@@ -37,8 +45,8 @@ namespace HomeLibrary
             {
                 config.SignIn.RequireConfirmedEmail = true;
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
             services.AddMvc(options =>
             {
@@ -46,16 +54,30 @@ namespace HomeLibrary
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            }).AddControllersAsServices();
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>{
-                options.TokenLifespan = TimeSpan.FromDays(1);
+                options.TokenLifespan = TimeSpan.FromHours(24);
             });
 
-            services.AddTransient<IEmailSender, MailKitEmailSender>();
+            services.AddHangfire(config => config.UseMemoryStorage());
+
+            var builder = new ContainerBuilder();
+            var assembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly;                       
+
+            builder.Populate(services);
+            builder.RegisterAssemblyTypes(assembly);
+            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();  
+            builder.RegisterType<MailKitEmailSender>().As<IEmailSender>();  
+
+            ApplicationContainer = builder.Build();
+
+            GlobalConfiguration.Configuration.UseActivator(new AutofacJobActivator(ApplicationContainer));
+
+            return new AutofacServiceProvider(this.ApplicationContainer);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -74,12 +96,20 @@ namespace HomeLibrary
 
             app.UseIdentity();
 
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+
+            RecurringJob.AddOrUpdate<AccountCleaner>(
+                x=>x.DeleteUnconfirmedAccounts(), Cron.Minutely);
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+              appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }
     }
 }

@@ -8,8 +8,8 @@ using HomeLibrary.Models;
 namespace HomeLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170430141706_Identity")]
-    partial class Identity
+    [Migration("20170501134157_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,6 +46,8 @@ namespace HomeLibrary.Migrations
                     b.Property<string>("PhoneNumber");
 
                     b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<DateTime>("RegisterDate");
 
                     b.Property<string>("SecurityStamp");
 

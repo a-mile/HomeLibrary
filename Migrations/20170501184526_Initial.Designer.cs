@@ -8,7 +8,7 @@ using HomeLibrary.Models;
 namespace HomeLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170501134157_Initial")]
+    [Migration("20170501184526_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,8 @@ namespace HomeLibrary.Migrations
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
+
+                    b.Property<int?>("LibraryId");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -58,6 +60,8 @@ namespace HomeLibrary.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LibraryId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -66,6 +70,46 @@ namespace HomeLibrary.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Book", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ApplicationUserId");
+
+                    b.Property<string>("Author");
+
+                    b.Property<string>("ISBN");
+
+                    b.Property<string>("Language");
+
+                    b.Property<int>("LibraryId");
+
+                    b.Property<string>("Publisher");
+
+                    b.Property<DateTime>("RelaseDate");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Library", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ApplicationUserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Libraries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -173,6 +217,21 @@ namespace HomeLibrary.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("HomeLibrary.Models.Library")
+                        .WithMany("Users")
+                        .HasForeignKey("LibraryId");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Book", b =>
+                {
+                    b.HasOne("HomeLibrary.Models.Library")
+                        .WithMany("Books")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

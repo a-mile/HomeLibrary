@@ -11,6 +11,9 @@ namespace HomeLibrary.Models
     {
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
+        public DbSet<Library> Libraries {get;set;}
+        public DbSet<Book> Books {get;set;}
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

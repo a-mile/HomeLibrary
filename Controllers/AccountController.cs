@@ -37,9 +37,11 @@ namespace HomeLibrary.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login(string returnUrl = null, string message = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData["Message"] = message;
+
             return View();
         }
 
@@ -103,7 +105,7 @@ namespace HomeLibrary.Controllers
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                         "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction(nameof(AccountController.Login), new { message = "confirm"});
                 }
                 AddErrors(result);
             }
@@ -117,7 +119,7 @@ namespace HomeLibrary.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(AccountController.Login), new{ message = "logout"});
         }
 
         [HttpGet]

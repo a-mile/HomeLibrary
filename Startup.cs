@@ -17,6 +17,7 @@ using Autofac;
 using System.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using HomeLibrary.Infrastructure;
+using AutoMapper;
 
 namespace HomeLibrary
 {
@@ -61,6 +62,8 @@ namespace HomeLibrary
             });
 
             services.AddHangfire(config => config.UseMemoryStorage());
+
+            services.AddAutoMapper(); 
 
             var builder = new ContainerBuilder();
             var assembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly;                       

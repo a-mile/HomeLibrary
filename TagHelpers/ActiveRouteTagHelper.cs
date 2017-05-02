@@ -13,10 +13,10 @@ public class ActiveRouteTagHelper : TagHelper
 {
     private IDictionary<string, string> _routeValues;
 
-    [HtmlAttributeName("asp-action")]
+    [HtmlAttributeName("asp-active-action")]
     public string Action { get; set; }
 
-    [HtmlAttributeName("asp-controller")]
+    [HtmlAttributeName("asp-active-controller")]
     public string Controller { get; set; }
 
     [HtmlAttributeName("asp-all-route-data", DictionaryAttributePrefix = "asp-route-")]
@@ -55,14 +55,19 @@ public class ActiveRouteTagHelper : TagHelper
         string currentController = ViewContext.RouteData.Values["Controller"].ToString();
         string currentAction = ViewContext.RouteData.Values["Action"].ToString();
 
-        if (!string.IsNullOrWhiteSpace(Controller) && Controller.ToLower() != currentController.ToLower())
+        if(!string.IsNullOrWhiteSpace(Controller))
         {
-            return false;
-        }
+            string[] controllers = Controller.ToLower().Split(' ');
 
-        if (!string.IsNullOrWhiteSpace(Action) && Action.ToLower() != currentAction.ToLower())
+            if(!controllers.Contains(currentController.ToLower()))
+                return false;
+        }
+        if (!string.IsNullOrWhiteSpace(Action))
         {
-            return false;
+            string[] actions = Action.ToLower().Split(' ');
+
+            if(!actions.Contains(currentAction.ToLower()))
+                return false;
         }
 
         foreach (KeyValuePair<string, string> routeValue in RouteValues)

@@ -1,7 +1,10 @@
+@model LibraryViewModel
+
 @{
     ViewData["Title"] = "My library";
     Layout = "_MainLayout";
 }
+
 
 <div class="row">
     <div class="col-lg-12">
@@ -17,26 +20,36 @@
             </div>
             <div class="panel-body">
                 <div class="list-group">
-                    <div class="list-group-item">Book1</div>
-                    <div class="list-group-item">Book2</div>
-                    <div class="list-group-item">Book3</div>
+                    @foreach(var book in Model.Books)
+                    {
+                        <div class="list-group-item">@book.Title</div>
+                    }
+                    @if(Model.Books.Count() == 0)
+                    {
+                        @: You haven't any books.
+                    }
                 </div>
-                <a class="btn btn-default btn-block" href="#">Add new book</a>
+                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="NewBook">Add new book</a>
             </div>
         </div>
     </div>
     <div class="col-lg-4">
         <div class="panel panel-default">
             <div class="panel-heading">
-                Guest list
+                Invited users
             </div>
             <div class="panel-body">
                 <div class="list-group">
-                    <div class="list-group-item">Antoni</div>
-                    <div class="list-group-item">Maria</div>
-                    <div class="list-group-item">Kuba</div>
+                    @foreach(var user in Model.Users)
+                    {
+                        <div class="list-group-item">@user.UserName</div>
+                    }
+                    @if(Model.Users.Count() == 0)
+                    {
+                        @: You didn't invite any user.
+                    }
                 </div>
-                <a class="btn btn-default btn-block" href="#">Add new guest</a>
+                <a class="btn btn-default btn-block" href="#">Invite user</a>
             </div>
         </div>
     </div>

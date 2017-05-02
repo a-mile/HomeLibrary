@@ -68,7 +68,7 @@ namespace HomeLibrary.Controllers
                     }
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
@@ -100,7 +100,7 @@ namespace HomeLibrary.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, RegisterDate = DateTime.Now };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, RegisterDate = DateTime.Now };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -163,11 +163,6 @@ namespace HomeLibrary.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-        }
-
-        private Task<ApplicationUser> GetCurrentUserAsync()
-        {
-            return _userManager.GetUserAsync(HttpContext.User);
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

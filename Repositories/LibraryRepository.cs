@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using HomeLibrary.Models;
 
 namespace HomeLibrary.Repositories
@@ -15,6 +16,11 @@ namespace HomeLibrary.Repositories
         public void AddLibrary(Library library)
         {
             _context.Libraries.Add(library);
+        }
+
+        public Library GetUserLibrary(string userId)
+        {
+            return _context.Libraries.Where(x=>x.ApplicationUserId == userId).FirstOrDefault();
         }
 
         public void SaveChanges()

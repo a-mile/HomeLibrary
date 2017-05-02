@@ -16,7 +16,7 @@ namespace HomeLibrary.Models
         public int Id {get;set;}
 
         [ForeignKey("ApplicationUser")]
-        public int ApplicationUserId {get;set;}
+        public string ApplicationUserId {get;set;}
 
         public virtual ICollection<ApplicationUser> Users {get;set;}
         public virtual ICollection<Book> Books {get;set;}

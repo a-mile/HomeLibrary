@@ -3,6 +3,8 @@
   "private": true,
   "dependencies": {
     "bootstrap": "latest",
-    "jasny-bootstrap": "latest"    
+    "metisMenu": "latest",
+    "sb-admin-2": "latest",
+    "Font-Awesome": "latest"
   }
 }

@@ -14,7 +14,7 @@ namespace HomeLibrary.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ApplicationUserId = table.Column<int>(nullable: false)
+                    ApplicationUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,7 +88,7 @@ namespace HomeLibrary.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ApplicationUserId = table.Column<int>(nullable: false),
+                    ApplicationUserId = table.Column<string>(nullable: true),
                     Author = table.Column<string>(nullable: true),
                     ISBN = table.Column<string>(nullable: true),
                     Language = table.Column<string>(nullable: true),

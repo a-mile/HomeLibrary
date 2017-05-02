@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using HomeLibrary.Models;
 using HomeLibrary.Models.AccountViewModels;
+using HomeLibrary.Repositories;
 using HomeLibrary.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -22,17 +23,20 @@ namespace HomeLibrary.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ILibraryRepository _libraryRepository;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILoggerFactory loggerFactory,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ILibraryRepository libraryRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
             _emailSender = emailSender;
+            _libraryRepository = libraryRepository;
         }
 
         [HttpGet]
@@ -136,7 +140,21 @@ namespace HomeLibrary.Controllers
                 return View("Error");
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+
+            if(result.Succeeded)
+            {
+                var userLibrary = new Library()
+                {
+                    ApplicationUserId = userId
+                };
+
+                _libraryRepository.AddLibrary(userLibrary);
+                _libraryRepository.SaveChanges();
+
+                return View("ConfirmEmail");
+            }
+
+            return View("Error");
         }
 
         private void AddErrors(IdentityResult result)

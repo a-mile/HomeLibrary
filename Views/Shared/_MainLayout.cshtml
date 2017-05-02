@@ -9,47 +9,83 @@
         
         <link rel="stylesheet" href="~/css/reset.css" />
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css"/>
-        <link rel="stylesheet" href="~/lib/jasny-bootstrap/dist/css/jasny-bootstrap.css"/>
+        <link rel="stylesheet" href="~/lib/metisMenu/dist/metisMenu.css"/>
+        <link rel="stylesheet" href="~/lib/sb-admin-2/css/sb-admin-2.css"/>
+        <link rel="stylesheet" href="~/lib/Font-Awesome/css/font-awesome.css"/>
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
        
         <link rel="stylesheet" href="~/css/reset.css" />
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="~/lib/jasny-bootstrap/dist/css/jasny-bootstrap.min.css"/>
+        <link rel="stylesheet" href="~/lib/metisMenu/dist/metisMenu.min.css"/>
+        <link rel="stylesheet" href="~/lib/sb-admin-2/css/sb-admin-2.min.css"/>
+        <link rel="stylesheet" href="~/lib/Font-Awesome/css/font-awesome.min.css"/>
          <link rel="stylesheet" href="~/css/site.min.css"/>
     </environment>
 </head>
 <body>
-    <div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
-      <a class="navmenu-brand visible-md visible-lg" href="#">Home library</a>
-      <ul class="nav navmenu-nav">
-        <li is-active-route asp-controller="Home" asp-action="Index"><a asp-controller="Home" asp-action="Index">My library</a></li>
-      </ul>
-    </div>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                 <a class="navbar-brand" href="#">Home Library</a>
+            </div>
 
-    <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
-      <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Home Library</a>
-    </div>
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages" style="width:150px">  
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>                        
+                    </ul>
+                </li>
+            </ul>
 
-    @RenderBody()
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            </div>
+                        </li>
+                        <li><a is-active-route asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a is-active-route asp-controller="Library" asp-action="Index">My library</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+         <div id="page-wrapper">
+             @RenderBody()
+         </div>
+    </div>
     
     <environment names="Development">
         <script src="~/js/site.js"></script>
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/lib/jasny-bootstrap/dist/js/jasny-bootstrap.js"></script>
+        <script src="~/lib/metisMenu/dist/metisMenu.js"></script>
+        <script src="~/lib/sb-admin-2/js/sb-admin-2.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="~/js/site.min.js"></script>
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="~/lib/jasny-bootstrap/dist/js/jasny-bootstrap.min.js"></script>
+        <script src="~/lib/metisMenu/dist/metisMenu.min.js"></script>
+        <script src="~/lib/sb-admin-2/js/sb-admin-2.js"></script>
     </environment>
 
     @RenderSection("Scripts", required: false)

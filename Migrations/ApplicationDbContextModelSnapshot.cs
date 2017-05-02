@@ -76,7 +76,7 @@ namespace HomeLibrary.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ApplicationUserId");
+                    b.Property<string>("ApplicationUserId");
 
                     b.Property<string>("Author");
 
@@ -104,7 +104,7 @@ namespace HomeLibrary.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ApplicationUserId");
+                    b.Property<string>("ApplicationUserId");
 
                     b.HasKey("Id");
 

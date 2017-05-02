@@ -8,7 +8,7 @@ using HomeLibrary.Models;
 namespace HomeLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170501184526_Initial")]
+    [Migration("20170502085714_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,7 +77,7 @@ namespace HomeLibrary.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ApplicationUserId");
+                    b.Property<string>("ApplicationUserId");
 
                     b.Property<string>("Author");
 
@@ -105,7 +105,7 @@ namespace HomeLibrary.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ApplicationUserId");
+                    b.Property<string>("ApplicationUserId");
 
                     b.HasKey("Id");
 

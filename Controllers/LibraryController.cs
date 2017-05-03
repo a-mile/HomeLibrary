@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using HomeLibrary.Infrastructure;
 using HomeLibrary.Models;
 using HomeLibrary.Models.BookViewModels;
 using HomeLibrary.Models.LibraryViewModels;
 using HomeLibrary.Repositories;
+using HomeLibrary.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +19,16 @@ namespace HomeLibrary.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILibraryRepository _libraryRepository;
+        private readonly IEmailSender _emailSender;
+        private readonly InvitationTokenProvider _tokenProvider;
 
-        public LibraryController(IMapper mapper, UserManager<ApplicationUser> userManager, ILibraryRepository libraryRepository)
+        public LibraryController(IMapper mapper, UserManager<ApplicationUser> userManager, ILibraryRepository libraryRepository, IEmailSender emailSender, InvitationTokenProvider tokenProvider)
         {
             _mapper = mapper;
             _userManager = userManager;
             _libraryRepository = libraryRepository;
+            _emailSender = emailSender;
+            _tokenProvider = tokenProvider;
         }
 
         public IActionResult Index()
@@ -73,6 +79,36 @@ namespace HomeLibrary.Controllers
 
                 userLibrary.Books.Add(newBook);
                 _libraryRepository.SaveChanges();
+
+                return RedirectToAction(nameof(LibraryController.Index));
+            }
+
+            return View(viewModel);
+        }
+
+        public IActionResult InviteUser()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InviteUser(InviteUserViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var invitation = new Invitation();
+
+                invitation.Email = viewModel.Email;
+                invitation.LibraryId = _libraryRepository.GetUserLibrary(_userManager.GetUserId(User)).Id;
+
+                var code = _tokenProvider.Generate(viewModel.Email);
+
+                var callbackUrl = Url.Action("ConfirmInvitation", "Library", new { email = viewModel.Email, code = code }, protocol: HttpContext.Request.Scheme);
+
+                await _emailSender.SendEmailAsync(viewModel.Email, "Home Library invitation link", $"{_userManager.GetUserName(User)} invited you to his home library please click link below" 
+                 + "to confirm invitation : "+ callbackUrl);         
+
+                _libraryRepository.AddInvitation(invitation);
 
                 return RedirectToAction(nameof(LibraryController.Index));
             }

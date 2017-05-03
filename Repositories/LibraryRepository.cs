@@ -14,6 +14,11 @@ namespace HomeLibrary.Repositories
             _context = context;
         }
 
+        public void AddInvitation(Invitation invitation)
+        {
+            _context.Invitations.Add(invitation);
+        }
+
         public void AddLibrary(Library library)
         {
             _context.Libraries.Add(library);

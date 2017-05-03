@@ -13,6 +13,7 @@ namespace HomeLibrary.Models
 
         public DbSet<Library> Libraries {get;set;}
         public DbSet<Book> Books {get;set;}
+        public DbSet<Invitation> Invitations {get;set;}
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

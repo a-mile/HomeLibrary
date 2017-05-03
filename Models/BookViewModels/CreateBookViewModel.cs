@@ -1,23 +1,21 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace HomeLibrary.Models.LibraryViewModels
+namespace HomeLibrary.Models.BookViewModels
 {
-    public class NewBookViewModel
+    public class CreateBookViewModel
     {
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 1)]
         public string Title {get;set;}
 
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 1)]
         public string Author {get;set;}
 
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 1)]
         public string Publisher {get;set;}
 
         [Required]
+        [Display(Name = "Relase date")]
         public DateTime RelaseDate {get;set;}
 
         [Required]
@@ -25,7 +23,6 @@ namespace HomeLibrary.Models.LibraryViewModels
         public string ISBN {get;set;}
 
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         public string Language {get;set;}
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HomeLibrary.Models;
+using HomeLibrary.Models.BookViewModels;
 using HomeLibrary.Models.LibraryViewModels;
 using HomeLibrary.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -24,7 +25,6 @@ namespace HomeLibrary.Controllers
             _libraryRepository = libraryRepository;
         }
 
-
         public IActionResult Index()
         {
             var userLibrary = _libraryRepository.GetUserLibrary(_userManager.GetUserId(User));
@@ -34,17 +34,19 @@ namespace HomeLibrary.Controllers
 
             var libraryViewModel = new LibraryViewModel();
 
-            var books = new List<BookViewModel>();
-            var users = new List<UserViewModel>();
+            var books = new List<ReadBookViewModel>();
+            var users = new List<LibraryUserViewModel>();
 
             foreach(var user in userLibrary.Users.ToList())
             {
-                users.Add(_mapper.Map<UserViewModel>(user));
+                users.Add(_mapper.Map<LibraryUserViewModel>(user));
             }
 
              foreach(var book in userLibrary.Books.ToList())
             {
-                books.Add(_mapper.Map<BookViewModel>(book));
+                var bookViewModel = _mapper.Map<ReadBookViewModel>(book);
+                bookViewModel.AddedBy = book.ApplicationUser.UserName;
+                books.Add(bookViewModel);
             }
 
             libraryViewModel.Users = users;
@@ -53,15 +55,29 @@ namespace HomeLibrary.Controllers
             return View(libraryViewModel);
         }
 
-        public IActionResult NewBook()
+        public IActionResult CreateBook()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult NewBook(NewBookViewModel viewModel)
+        public IActionResult CreateBook(CreateBookViewModel viewModel)
         {
-            return RedirectToAction(nameof(LibraryController.Index));
+            var userLibrary = _libraryRepository.GetUserLibrary(_userManager.GetUserId(User));
+
+            if (ModelState.IsValid)
+            {
+                var newBook = _mapper.Map<Book>(viewModel);
+                newBook.ApplicationUserId = _userManager.GetUserId(User);
+                newBook.LibraryId = userLibrary.Id;
+
+                userLibrary.Books.Add(newBook);
+                _libraryRepository.SaveChanges();
+
+                return RedirectToAction(nameof(LibraryController.Index));
+            }
+
+            return View(viewModel);
         }
     }
 }

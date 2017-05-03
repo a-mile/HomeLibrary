@@ -1,5 +1,6 @@
 using AutoMapper;
 using HomeLibrary.Models;
+using HomeLibrary.Models.BookViewModels;
 using HomeLibrary.Models.LibraryViewModels;
 
 namespace HomeLibrary.Infrastructure
@@ -8,9 +9,10 @@ namespace HomeLibrary.Infrastructure
     {
         public MappingProfile()
         {
-            CreateMap<ApplicationUser, UserViewModel>();
-            CreateMap<Book, BookViewModel>();
+            CreateMap<ApplicationUser, LibraryUserViewModel>();
+            CreateMap<Book, ReadBookViewModel>();
             CreateMap<Library, LibraryViewModel>();
+            CreateMap<CreateBookViewModel, Book>();
         }
     }
 }

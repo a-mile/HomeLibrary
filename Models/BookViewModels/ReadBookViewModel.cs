@@ -1,8 +1,8 @@
 using System;
 
-namespace HomeLibrary.Models.LibraryViewModels
+namespace HomeLibrary.Models.BookViewModels
 {
-    public class BookViewModel
+    public class ReadBookViewModel
     {
         public int Id {get;set;}
         public string AddedBy {get;set;}

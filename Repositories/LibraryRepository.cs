@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using HomeLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeLibrary.Repositories
 {
@@ -20,7 +21,11 @@ namespace HomeLibrary.Repositories
 
         public Library GetUserLibrary(string userId)
         {
-            return _context.Libraries.Where(x=>x.ApplicationUserId == userId).FirstOrDefault();
+            return _context.Libraries.Where(x=>x.ApplicationUserId == userId)
+                .Include(x=>x.Books)
+                    .ThenInclude(x=>x.ApplicationUser)
+                .Include(x=>x.Users)
+                .FirstOrDefault();
         }
 
         public void SaveChanges()

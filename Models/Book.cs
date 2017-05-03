@@ -21,5 +21,7 @@ namespace HomeLibrary.Models
         public DateTime RelaseDate {get;set;}
         public string ISBN {get;set;}
         public string Language {get;set;}
+
+        public virtual ApplicationUser ApplicationUser {get;set;}
     }
 }

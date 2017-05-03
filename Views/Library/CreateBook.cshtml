@@ -1,7 +1,7 @@
-@model NewBookViewModel
+@model CreateBookViewModel
 
 @{
-    ViewData["PageTitle"] = "New Book";
+    ViewData["PageTitle"] = "Create Book";
     Layout = "_MainLayout";
 }
 
@@ -14,7 +14,7 @@
 
 <div class="row">
     <div class="col-lg-6">   
-        <form asp-controller="Library" asp-action="NewBook" method="post" class="form-horizontal" role="form">
+        <form asp-controller="Library" asp-action="CreateBook" method="post" class="form-horizontal" role="form">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 @Html.EditorForModel()
                 <div class="form-group">

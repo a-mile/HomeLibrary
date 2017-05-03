@@ -22,14 +22,20 @@
                 <div class="list-group">
                     @foreach(var book in Model.Books)
                     {
-                        <div class="list-group-item">@book.Title</div>
+                        <div class="list-group-item">
+                            <span class="pull-right text-muted">Dodana przez: @book.AddedBy</span>
+                            <h4>@book.Title</h4>
+                            
+                            @book.Author
+                            
+                        </div>
                     }
                     @if(Model.Books.Count() == 0)
                     {
                         @: You haven't any books.
                     }
                 </div>
-                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="NewBook">Add new book</a>
+                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="CreateBook">Create book</a>
             </div>
         </div>
     </div>

@@ -57,5 +57,11 @@ namespace HomeLibrary.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult NewBook(NewBookViewModel viewModel)
+        {
+            return RedirectToAction(nameof(LibraryController.Index));
+        }
     }
 }

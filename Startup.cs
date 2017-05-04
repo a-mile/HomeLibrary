@@ -58,6 +58,9 @@ namespace HomeLibrary
                 options.Filters.Add(new AuthorizeFilter(policy));
             }).AddControllersAsServices();
 
+            services.AddSession();
+            services.AddMemoryCache();
+
             services.Configure<DataProtectionTokenProviderOptions>(options =>{
                 options.TokenLifespan = TimeSpan.FromHours(24);
             });
@@ -98,6 +101,7 @@ namespace HomeLibrary
             }
 
             app.UseStaticFiles();
+            app.UseSession();
 
             app.UseIdentity();
 

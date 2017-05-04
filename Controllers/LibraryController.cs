@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using HomeLibrary.Infrastructure;
+using HomeLibrary.Infrastructure.Alerts;
 using HomeLibrary.Models;
 using HomeLibrary.Models.BookViewModels;
 using HomeLibrary.Models.LibraryViewModels;
@@ -82,7 +83,7 @@ namespace HomeLibrary.Controllers
                 userLibrary.Books.Add(newBook);
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.Index));
+                return RedirectToAction(nameof(LibraryController.Index)).WithSuccess("Successfull added new book.");
             }
 
             return View(viewModel);
@@ -118,7 +119,7 @@ namespace HomeLibrary.Controllers
 
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.Index));
+                return RedirectToAction(nameof(LibraryController.Index)).WithSuccess("Invitation sended.");
             }
 
             return View(viewModel);
@@ -162,7 +163,7 @@ namespace HomeLibrary.Controllers
 
                         _libraryRepository.SaveChanges();
 
-                        return RedirectToAction(nameof(LibraryController.Index));
+                        return RedirectToAction(nameof(LibraryController.Index)).WithSuccess("Invitation confirmed.");
                     }
                 }
             }

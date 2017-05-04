@@ -5,6 +5,7 @@
     "bootstrap": "latest",
     "metisMenu": "latest",
     "sb-admin-2": "latest",
-    "Font-Awesome": "latest"
+    "Font-Awesome": "latest",
+    "underscore": "latest"
   }
 }

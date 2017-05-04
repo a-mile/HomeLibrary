@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using HomeLibrary.Infrastructure.Alerts;
 using HomeLibrary.Models;
 using HomeLibrary.Models.AccountViewModels;
 using HomeLibrary.Repositories;
@@ -120,7 +121,7 @@ namespace HomeLibrary.Controllers
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                         "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                     _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToAction(nameof(AccountController.Login), new { message = "confirm"});
+                    return RedirectToAction(nameof(AccountController.Login)).WithInfo("Please confirm your account by clicking on link we are send to your email.");
                 }
                 AddErrors(result);
             }

@@ -6,14 +6,13 @@ namespace HomeLibrary.Models
 {
     public class Book
     {
-        [Key]
         public int Id {get;set;}
 
-        [ForeignKey("ApplicationUser")]
         public string ApplicationUserId {get;set;}
+        public ApplicationUser ApplicationUser {get;set;}
 
-        [ForeignKey("Library")]
         public int LibraryId {get;set;}
+        public Library Library {get;set;}
 
         public string Title {get;set;}
         public string Author {get;set;}
@@ -21,7 +20,5 @@ namespace HomeLibrary.Models
         public DateTime RelaseDate {get;set;}
         public string ISBN {get;set;}
         public string Language {get;set;}
-
-        public virtual ApplicationUser ApplicationUser {get;set;}
     }
 }

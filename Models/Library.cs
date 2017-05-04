@@ -6,19 +6,15 @@ namespace HomeLibrary.Models
 {
     public class Library
     {
-        public Library()
-        {
-            Users = new HashSet<ApplicationUser>();
-            Books = new HashSet<Book>();
-        }
-
-        [Key]
         public int Id {get;set;}
+        
+        public string OwnerId {get;set;}
 
-        [ForeignKey("ApplicationUser")]
-        public string ApplicationUserId {get;set;}
+        [ForeignKey("OwnerId")]
+        public ApplicationUser Owner {get;set;}
 
-        public virtual ICollection<ApplicationUser> Users {get;set;}
-        public virtual ICollection<Book> Books {get;set;}
+        public List<UserLibrary> Users {get;set;}
+        public List<Book> Books {get;set;}
+        public List<Invitation> Invitations {get;set;}
     }
 }

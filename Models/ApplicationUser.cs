@@ -9,5 +9,8 @@ namespace HomeLibrary.Models
     public class ApplicationUser : IdentityUser
     {
         public DateTime RegisterDate {get;set;}
+
+        public Library OwnLibrary {get; set;}
+        public List<UserLibrary> Libraries {get;set;}
     }
 }

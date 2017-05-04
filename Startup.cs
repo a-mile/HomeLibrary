@@ -18,6 +18,7 @@ using System.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using HomeLibrary.Infrastructure;
 using AutoMapper;
+using HomeLibrary.Data;
 
 namespace HomeLibrary
 {
@@ -80,7 +81,8 @@ namespace HomeLibrary
             return new AutofacServiceProvider(this.ApplicationContainer);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime,
+            DbInitializer dbInitializer)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -112,7 +114,9 @@ namespace HomeLibrary
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-              appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
+            dbInitializer.Initialize();
+
+            appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }
     }
 }

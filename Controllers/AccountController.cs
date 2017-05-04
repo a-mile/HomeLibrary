@@ -86,9 +86,20 @@ namespace HomeLibrary.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult Register(string returnUrl = null, string email = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
+            if(email != null)
+            {
+                ViewData["Message"] = "noaccount";
+
+                var registerViewModel = new RegisterViewModel();
+                registerViewModel.Email = email;
+
+                return View(registerViewModel);
+            }
+
             return View();
         }
 
@@ -145,7 +156,7 @@ namespace HomeLibrary.Controllers
             {
                 var userLibrary = new Library()
                 {
-                    ApplicationUserId = userId
+                    OwnerId = userId
                 };
 
                 _libraryRepository.AddLibrary(userLibrary);

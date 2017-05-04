@@ -30,8 +30,6 @@ namespace HomeLibrary.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<int?>("LibraryId");
-
                     b.Property<bool>("LockoutEnabled");
 
                     b.Property<DateTimeOffset?>("LockoutEnd");
@@ -58,8 +56,6 @@ namespace HomeLibrary.Migrations
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LibraryId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -94,9 +90,29 @@ namespace HomeLibrary.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.HasIndex("LibraryId");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Invitation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Email");
+
+                    b.Property<int>("LibraryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId");
+
+                    b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("HomeLibrary.Models.Library", b =>
@@ -104,11 +120,27 @@ namespace HomeLibrary.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApplicationUserId");
+                    b.Property<string>("OwnerId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OwnerId")
+                        .IsUnique();
+
                     b.ToTable("Libraries");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.UserLibrary", b =>
+                {
+                    b.Property<string>("ApplicationUserId");
+
+                    b.Property<int>("LibraryId");
+
+                    b.HasKey("ApplicationUserId", "LibraryId");
+
+                    b.HasIndex("LibraryId");
+
+                    b.ToTable("UserLibraries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -218,17 +250,42 @@ namespace HomeLibrary.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("HomeLibrary.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("HomeLibrary.Models.Library")
-                        .WithMany("Users")
-                        .HasForeignKey("LibraryId");
-                });
-
             modelBuilder.Entity("HomeLibrary.Models.Book", b =>
                 {
-                    b.HasOne("HomeLibrary.Models.Library")
+                    b.HasOne("HomeLibrary.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("HomeLibrary.Models.Library", "Library")
                         .WithMany("Books")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Invitation", b =>
+                {
+                    b.HasOne("HomeLibrary.Models.Library", "Library")
+                        .WithMany("Invitations")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Library", b =>
+                {
+                    b.HasOne("HomeLibrary.Models.ApplicationUser", "Owner")
+                        .WithOne("OwnLibrary")
+                        .HasForeignKey("HomeLibrary.Models.Library", "OwnerId");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.UserLibrary", b =>
+                {
+                    b.HasOne("HomeLibrary.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Libraries")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HomeLibrary.Models.Library", "Library")
+                        .WithMany("Users")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -33,7 +33,7 @@ namespace HomeLibrary.Controllers
 
         public IActionResult Index()
         {
-            var userLibrary = _libraryRepository.GetUserLibrary(_userManager.GetUserId(User));
+            var userLibrary = _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
 
             if(userLibrary == null)
                 return View("Error");
@@ -71,7 +71,7 @@ namespace HomeLibrary.Controllers
         [HttpPost]
         public IActionResult CreateBook(CreateBookViewModel viewModel)
         {
-            var userLibrary = _libraryRepository.GetUserLibrary(_userManager.GetUserId(User));
+            var userLibrary = _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
 
             if (ModelState.IsValid)
             {
@@ -98,10 +98,14 @@ namespace HomeLibrary.Controllers
         {
             if (ModelState.IsValid)
             {
-                var invitation = new Invitation();
+                var userLibrary =  _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
 
-                invitation.Email = viewModel.Email;
-                invitation.LibraryId = _libraryRepository.GetUserLibrary(_userManager.GetUserId(User)).Id;
+                var invitation = new Invitation()
+                {
+                    Email = viewModel.Email,
+                    LibraryId = userLibrary.Id,
+                    Date = DateTime.Now
+                };
 
                 var code = _tokenProvider.Generate(viewModel.Email);
 
@@ -110,7 +114,8 @@ namespace HomeLibrary.Controllers
                 await _emailSender.SendEmailAsync(viewModel.Email, "Home Library invitation link", $"{_userManager.GetUserName(User)} invited you to his home library please click link below" 
                  + "to confirm invitation : "+ callbackUrl);         
 
-                _libraryRepository.AddInvitation(invitation);
+                userLibrary.Invitations.Add(invitation);
+
                 _libraryRepository.SaveChanges();
 
                 return RedirectToAction(nameof(LibraryController.Index));
@@ -137,11 +142,29 @@ namespace HomeLibrary.Controllers
 
             if(result)
             {
-                _libraryRepository.RemoveInvitation(libraryId.Value, email);
-                _libraryRepository.AddUserToLibrary(libraryId.Value, email);
-                _libraryRepository.SaveChanges();
+                var library = _libraryRepository.GetLibraryById(libraryId.Value);
 
-                return RedirectToAction(nameof(LibraryController.Index));
+                if(library != null)
+                {
+                    var invitation = library.Invitations.Where(x=>x.Email == email).FirstOrDefault();
+
+                    if(invitation != null)
+                    {
+                        library.Invitations.Remove(invitation);
+
+                        var userLibrary = new UserLibrary()
+                        {
+                            ApplicationUserId = user.Id,
+                            LibraryId = library.Id
+                        };
+
+                        library.Users.Add(userLibrary);
+
+                        _libraryRepository.SaveChanges();
+
+                        return RedirectToAction(nameof(LibraryController.Index));
+                    }
+                }
             }
 
             return View("Error");

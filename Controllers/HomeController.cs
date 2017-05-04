@@ -12,10 +12,5 @@ namespace HomeLibrary.Controllers
         {
             return View();
         }
-
-        public IActionResult Error()
-        {
-            return View();
-        }
     }
 }

@@ -5,10 +5,8 @@ namespace HomeLibrary.Repositories
     public interface ILibraryRepository
     {
         void AddLibrary(Library library);
-        void AddInvitation(Invitation invitation);
-        Library GetUserLibrary(string userId);
+        Library GetLibraryByOwnerId(string userId);
+        Library GetLibraryById(int id);
         void SaveChanges();
-        void RemoveInvitation(int libraryId, string email);
-        void AddUserToLibrary(int libraryId, string email);
     }
 }

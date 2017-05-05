@@ -14,16 +14,6 @@
     <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
     <h4>Create a new account.</h4>
     <hr />
-     @{
-        if((string)ViewData["Message"] == "noaccount")
-        {
-            <div class="alert alert-info">
-                 You don't have home library account yet. Please register before confirm invitation.
-            </div>
-        }
-                   
-    }
-    <div asp-validation-summary="All" class="text-danger"></div>
     @Html.EditorForModel()
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

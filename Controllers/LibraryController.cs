@@ -136,7 +136,7 @@ namespace HomeLibrary.Controllers
 
             if(user == null)
             {
-                return RedirectToAction("Account",nameof(AccountController.Register), new { email = email});
+                return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You have to register home library account first.");
             }
 
             var result = _tokenProvider.Validate(code, email);

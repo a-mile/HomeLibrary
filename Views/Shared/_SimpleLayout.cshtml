@@ -15,17 +15,24 @@
     </environment>
 </head>
 <body>
-     
+    <div class="container alert-container"></div>
+
     @RenderBody()
     
-    <environment names="Development">
-        <script src="~/js/site.js"></script>
+   <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/underscore/underscore.js"></script>
+        <script src="~/js/utilities/bootstrapAlerts.js"></script>
     </environment>
     <environment names="Staging,Production">
-        <script src="~/js/site.min.js"></script>
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="~/lib/underscore/underscore.min.js"></script>
+        <script src="~/js/utilities/bootstrapAlerts.js"></script>
     </environment>
+
+    @Html.Partial("_Alerts")
 
     @RenderSection("Scripts", required: false)
 </body>

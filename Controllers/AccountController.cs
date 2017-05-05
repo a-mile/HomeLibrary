@@ -22,30 +22,26 @@ namespace HomeLibrary.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly ILibraryRepository _libraryRepository;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILoggerFactory loggerFactory,
             IEmailSender emailSender,
             ILibraryRepository libraryRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = loggerFactory.CreateLogger<AccountController>();
             _emailSender = emailSender;
             _libraryRepository = libraryRepository;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null, string message = null)
+        public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            ViewData["Message"] = message;
 
             return View();
         }
@@ -56,30 +52,30 @@ namespace HomeLibrary.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
+
                 if (user != null)
                 {
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        ModelState.AddModelError(string.Empty,
-                                      "You must have a confirmed email to log in.");
-                        return View(model);
+                        return View(model).WithError("You must have a confirmed email to log in.");
+                    }
+
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToLocal(returnUrl);
+                    }
+                    else
+                    {
+                        return View(model).WithError("Invalid login attempt.");
                     }
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation(1, "User logged in.");
-                    return RedirectToLocal(returnUrl);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
-                }
+                return View(model).WithError("Invalid login attempt.");
             }
 
             return View(model);
@@ -87,19 +83,9 @@ namespace HomeLibrary.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null, string email = null)
+        public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-
-            if(email != null)
-            {
-                ViewData["Message"] = "noaccount";
-
-                var registerViewModel = new RegisterViewModel();
-                registerViewModel.Email = email;
-
-                return View(registerViewModel);
-            }
 
             return View();
         }
@@ -110,19 +96,23 @@ namespace HomeLibrary.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, RegisterDate = DateTime.Now };
                 var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                    _logger.LogInformation(3, "User created a new account with password.");
+                        "Please confirm your account by clicking this link:" + callbackUrl);
+
                     return RedirectToAction(nameof(AccountController.Login)).WithInfo("Please confirm your account by clicking on link we are send to your email.");
                 }
+
                 AddErrors(result);
             }
 
@@ -134,8 +124,8 @@ namespace HomeLibrary.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(AccountController.Login), new{ message = "logout"});
+
+            return RedirectToAction(nameof(AccountController.Login)).WithSuccess("Successfully logged out.");
         }
 
         [HttpGet]
@@ -146,11 +136,14 @@ namespace HomeLibrary.Controllers
             {
                 return View("Error");
             }
+
             var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
             {
                 return View("Error");
             }
+
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
             if(result.Succeeded)
@@ -163,7 +156,7 @@ namespace HomeLibrary.Controllers
                 _libraryRepository.AddLibrary(userLibrary);
                 _libraryRepository.SaveChanges();
 
-                return View("ConfirmEmail");
+                 return RedirectToAction(nameof(AccountController.Login)).WithSuccess("You account is confirmed. You can sing in now.");
             }
 
             return View("Error");

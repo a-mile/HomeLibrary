@@ -3,10 +3,24 @@
 @foreach(var prop in ViewData.ModelMetadata.Properties.Where(p=>p.ShowForEdit))
 {
     <div class="form-group">
-        @Html.BootstrapLabel(prop.PropertyName)
-        <div class="col-md-10">
-            @Html.Editor(prop.PropertyName)
-            @Html.BootstrapValidationMessage(prop.PropertyName)
-        </div>
+        @if(prop.ModelType == typeof(bool))
+        {
+           <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <label for="@prop.PropertyName">
+                    @Html.Editor(prop.PropertyName)
+                    @prop.DisplayName
+                    </label>
+                </div>
+           </div>
+        }
+        else
+        {
+            @Html.BootstrapLabel(prop.DisplayName ?? prop.PropertyName)
+            <div class="col-md-10">
+                @Html.Editor(prop.PropertyName)
+                @Html.BootstrapValidationMessage(prop.PropertyName)
+            </div>
+        }
     </div>
 }

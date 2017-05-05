@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HomeLibrary.Models;
 
 namespace HomeLibrary.Repositories
@@ -7,6 +8,7 @@ namespace HomeLibrary.Repositories
         void AddLibrary(Library library);
         Library GetLibraryByOwnerId(string userId);
         Library GetLibraryById(int id);
+        IEnumerable<Library> GetOtherUserLibraries(string userId);
         void SaveChanges();
     }
 }

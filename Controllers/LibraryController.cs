@@ -32,7 +32,7 @@ namespace HomeLibrary.Controllers
             _tokenProvider = tokenProvider;
         }
 
-        public IActionResult Index()
+        public IActionResult MyLibrary()
         {
             var userLibrary = _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
 
@@ -64,6 +64,24 @@ namespace HomeLibrary.Controllers
             return View(libraryViewModel);
         }
 
+        public IActionResult OtherLibraries()
+        {
+            var otherLibraries = _libraryRepository.GetOtherUserLibraries(_userManager.GetUserId(User));
+            var libraryViewModels = new List<LibraryInfoViewModel>();
+
+            foreach(var library in otherLibraries)
+            {
+                libraryViewModels.Add(new LibraryInfoViewModel()
+                {
+                    Owner = library.Owner.UserName,
+                    BooksCount = library.Books.Count(),
+                    UsersCount = library.Users.Count() + 1 
+                });
+            }
+
+            return View(libraryViewModels);
+        }
+
         public IActionResult CreateBook()
         {
             return View();
@@ -83,7 +101,7 @@ namespace HomeLibrary.Controllers
                 userLibrary.Books.Add(newBook);
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.Index)).WithSuccess("Successfull added new book.");
+                return RedirectToAction(nameof(LibraryController.MyLibrary)).WithSuccess("Successfull added new book.");
             }
 
             return View(viewModel);
@@ -119,7 +137,7 @@ namespace HomeLibrary.Controllers
 
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.Index)).WithSuccess("Invitation sended.");
+                return RedirectToAction(nameof(LibraryController.MyLibrary)).WithSuccess("Invitation sended.");
             }
 
             return View(viewModel);
@@ -163,7 +181,7 @@ namespace HomeLibrary.Controllers
 
                         _libraryRepository.SaveChanges();
 
-                        return RedirectToAction(nameof(LibraryController.Index)).WithSuccess("Invitation confirmed.");
+                        return RedirectToAction(nameof(LibraryController.MyLibrary)).WithSuccess("Invitation confirmed.");
                     }
                 }
             }

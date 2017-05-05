@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using HomeLibrary.Models;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,16 @@ namespace HomeLibrary.Repositories
                 .Include(x=>x.Invitations)
                 .FirstOrDefault();
         }
+
+        public IEnumerable<Library> GetOtherUserLibraries(string userId)
+        {
+            return _context.Libraries.Where(x => _context.UserLibraries.Any(y => y.ApplicationUserId == userId && y.LibraryId == x.Id))
+                .Include(x=>x.Owner)
+                .Include(x=>x.Books)
+                .Include(x=>x.Users)
+                .ToList();
+        }
+
         public void SaveChanges()
         {
             _context.SaveChanges();

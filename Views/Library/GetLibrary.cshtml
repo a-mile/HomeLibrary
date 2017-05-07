@@ -1,7 +1,6 @@
-@model LibraryViewModel
+@model LibraryDetailsViewModel
 
 @{
-    ViewData["Title"] = "My library";
     Layout = "_MainLayout";
 }
 
@@ -35,7 +34,7 @@
                         @: You haven't any books.
                     }
                 </div>
-                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="CreateBook">Create book</a>
+                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="CreateBook" asp-route-libraryId="@Model.LibraryId">Create book</a>
             </div>
         </div>
     </div>
@@ -55,7 +54,10 @@
                         @: You didn't invite any user.
                     }
                 </div>
-                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="InviteUser">Invite user</a>
+                @if(Model.Owned)
+                {
+                    <a class="btn btn-default btn-block" asp-controller="Library" asp-action="InviteUser">Invite user</a>
+                }
             </div>
         </div>
     </div>

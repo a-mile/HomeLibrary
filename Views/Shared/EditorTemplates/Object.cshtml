@@ -3,24 +3,31 @@
 @foreach(var prop in ViewData.ModelMetadata.Properties.Where(p=>p.ShowForEdit))
 {
     <div class="form-group">
-        @if(prop.ModelType == typeof(bool))
+        @if(prop.TemplateHint == "HiddenInput")
         {
-           <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <label for="@prop.PropertyName">
-                    @Html.Editor(prop.PropertyName)
-                    @prop.DisplayName
-                    </label>
-                </div>
-           </div>
+            @Html.Hidden(prop.PropertyName)
         }
         else
         {
-            @Html.BootstrapLabel(prop.DisplayName ?? prop.PropertyName)
-            <div class="col-md-10">
-                @Html.Editor(prop.PropertyName)
-                @Html.BootstrapValidationMessage(prop.PropertyName)
+            @if(prop.ModelType == typeof(bool))
+            {
+            <div class="col-md-offset-2 col-md-10">
+                    <div class="checkbox">
+                        <label for="@prop.PropertyName">
+                        @Html.Editor(prop.PropertyName)
+                        @prop.DisplayName
+                        </label>
+                    </div>
             </div>
+            }
+            else
+            {
+                @Html.BootstrapLabel(prop.DisplayName ?? prop.PropertyName)
+                <div class="col-md-10">
+                    @Html.Editor(prop.PropertyName)
+                    @Html.BootstrapValidationMessage(prop.PropertyName)
+                </div>
+            }
         }
     </div>
 }

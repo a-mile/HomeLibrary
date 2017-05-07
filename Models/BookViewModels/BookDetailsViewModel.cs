@@ -2,7 +2,7 @@ using System;
 
 namespace HomeLibrary.Models.BookViewModels
 {
-    public class ReadBookViewModel
+    public class BookDetailsViewModel
     {
         public int Id {get;set;}
         public string AddedBy {get;set;}

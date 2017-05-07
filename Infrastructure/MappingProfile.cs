@@ -9,9 +9,9 @@ namespace HomeLibrary.Infrastructure
     {
         public MappingProfile()
         {
-            CreateMap<ApplicationUser, LibraryUserViewModel>();
-            CreateMap<Book, ReadBookViewModel>();
-            CreateMap<Library, LibraryViewModel>();
+            CreateMap<ApplicationUser, LibraryUserDetailsViewModel>();
+            CreateMap<Book, BookDetailsViewModel>();
+            CreateMap<Library, LibraryDetailsViewModel>();
             CreateMap<CreateBookViewModel, Book>();
         }
     }

@@ -23,7 +23,9 @@ namespace HomeLibrary.Controllers
         private readonly IEmailSender _emailSender;
         private readonly InvitationTokenProvider _tokenProvider;
 
-        public LibraryController(IMapper mapper, UserManager<ApplicationUser> userManager, ILibraryRepository libraryRepository, IEmailSender emailSender, InvitationTokenProvider tokenProvider)
+        public LibraryController(IMapper mapper, UserManager<ApplicationUser> userManager, 
+                                 ILibraryRepository libraryRepository, IEmailSender emailSender, 
+                                 InvitationTokenProvider tokenProvider)
         {
             _mapper = mapper;
             _userManager = userManager;
@@ -32,34 +34,55 @@ namespace HomeLibrary.Controllers
             _tokenProvider = tokenProvider;
         }
 
-        public IActionResult MyLibrary()
+        public IActionResult GetLibrary(int? libraryId)
         {
-            var userLibrary = _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
+            var userId = _userManager.GetUserId(User);
 
-            if(userLibrary == null)
+            Library library;
+
+            if(libraryId == null)
+            {
+                library = _libraryRepository.GetLibraryByOwnerId(userId);
+                ViewData["Title"] = "My library";
+            }
+            else
+            {
+                library = _libraryRepository.GetLibraryById(libraryId.Value);
+
+                if(library == null || !library.Users.Where(x=>x.ApplicationUserId == userId).Any())
+                    return View("Error");
+
+                ViewData["Title"] = library.Owner.UserName + " library";
+            }
+
+            if(library == null)
                 return View("Error");
 
-            var libraryViewModel = new LibraryViewModel();
+            var libraryViewModel = new LibraryDetailsViewModel();
 
-            var books = new List<ReadBookViewModel>();
-            var users = new List<LibraryUserViewModel>();
+            var books = new List<BookDetailsViewModel>();
+            var users = new List<LibraryUserDetailsViewModel>();
 
-            foreach(var user in userLibrary.Users.ToList())
+            foreach(var user in library.Users.ToList())
             {
                 var libraryUser = _userManager.FindByIdAsync(user.ApplicationUserId).Result;
 
-                users.Add(_mapper.Map<LibraryUserViewModel>(libraryUser));
+                if(libraryUser != null)
+                    users.Add(_mapper.Map<LibraryUserDetailsViewModel>(libraryUser));
             }
 
-             foreach(var book in userLibrary.Books.ToList())
+             foreach(var book in library.Books.ToList())
             {
-                var bookViewModel = _mapper.Map<ReadBookViewModel>(book);
+                var bookViewModel = _mapper.Map<BookDetailsViewModel>(book);
                 bookViewModel.AddedBy = book.ApplicationUser.UserName;
+
                 books.Add(bookViewModel);
             }
 
             libraryViewModel.Users = users;
             libraryViewModel.Books = books;
+            libraryViewModel.LibraryId = library.Id;
+            libraryViewModel.Owned = userId == library.OwnerId;
 
             return View(libraryViewModel);
         }
@@ -67,12 +90,14 @@ namespace HomeLibrary.Controllers
         public IActionResult OtherLibraries()
         {
             var otherLibraries = _libraryRepository.GetOtherUserLibraries(_userManager.GetUserId(User));
-            var libraryViewModels = new List<LibraryInfoViewModel>();
+
+            var libraryViewModels = new List<LibrarySummaryViewModel>();
 
             foreach(var library in otherLibraries)
             {
-                libraryViewModels.Add(new LibraryInfoViewModel()
+                libraryViewModels.Add(new LibrarySummaryViewModel()
                 {
+                    LibraryId = library.Id,
                     Owner = library.Owner.UserName,
                     BooksCount = library.Books.Count(),
                     UsersCount = library.Users.Count() + 1 
@@ -82,26 +107,39 @@ namespace HomeLibrary.Controllers
             return View(libraryViewModels);
         }
 
-        public IActionResult CreateBook()
+        public IActionResult CreateBook(int libraryId)
         {
-            return View();
+            CreateBookViewModel viewModel = new CreateBookViewModel()
+            {
+                LibraryId = libraryId
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         public IActionResult CreateBook(CreateBookViewModel viewModel)
         {
-            var userLibrary = _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
+            var userId = _userManager.GetUserId(User);
+            var library = _libraryRepository.GetLibraryById(viewModel.LibraryId);
+
+            if(library == null)
+                return View("Error");    
+
+            if(library.OwnerId != userId && !library.Users.Where(x=>x.ApplicationUserId == userId).Any())
+                return View("Error"); 
 
             if (ModelState.IsValid)
             {
                 var newBook = _mapper.Map<Book>(viewModel);
-                newBook.ApplicationUserId = _userManager.GetUserId(User);
-                newBook.LibraryId = userLibrary.Id;
 
-                userLibrary.Books.Add(newBook);
+                newBook.ApplicationUserId = userId;
+                newBook.LibraryId = library.Id;
+
+                library.Books.Add(newBook);
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.MyLibrary)).WithSuccess("Successfull added new book.");
+                return RedirectToAction(nameof(LibraryController.GetLibrary),new {libraryId = viewModel.LibraryId}).WithSuccess("Successfull added new book.");
             }
 
             return View(viewModel);
@@ -137,7 +175,7 @@ namespace HomeLibrary.Controllers
 
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.MyLibrary)).WithSuccess("Invitation sended.");
+                return RedirectToAction(nameof(LibraryController.GetLibrary)).WithSuccess("Invitation sended.");
             }
 
             return View(viewModel);
@@ -181,7 +219,7 @@ namespace HomeLibrary.Controllers
 
                         _libraryRepository.SaveChanges();
 
-                        return RedirectToAction(nameof(LibraryController.MyLibrary)).WithSuccess("Invitation confirmed.");
+                        return RedirectToAction(nameof(LibraryController.GetLibrary)).WithSuccess("Invitation confirmed.");
                     }
                 }
             }

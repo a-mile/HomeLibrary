@@ -44,8 +44,9 @@
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-messages" style="width:150px">  
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>                        
+                    <ul class="dropdown-menu dropdown-messages" style="width:150px"> 
+                        <form id="logout" method="post" asp-controller="Account" asp-action="LogOff"></form> 
+                        <li><a onclick="$('#logout').submit();" style="cursor:pointer"><i class="fa fa-sign-out fa-fw"></i> Logout</a>                        
                     </ul>
                 </li>
             </ul>
@@ -63,9 +64,9 @@
                             </span>
                             </div>
                         </li>
-                        <li><a is-active-route asp-controller="Home" asp-action="Index" asp-active-controller="Home" asp-active-action="Index">Home</a></li>
-                        <li><a is-active-route asp-controller="Library" asp-action="MyLibrary" asp-active-controller="Library" asp-active-action="MyLibrary CreateBook">My library</a></li>
-                        <li><a is-active-route asp-controller="Library" asp-action="OtherLibraries" asp-active-controller="Library" asp-active-action="OtherLibraries">Other libraries</a></li>
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Library" asp-action="GetLibrary">My library</a></li>
+                        <li><a asp-controller="Library" asp-action="OtherLibraries">Other libraries</a></li>
                     </ul>
                 </div>
             </div>
@@ -85,6 +86,7 @@
         <script src="~/lib/datepicker/js/bootstrap-datepicker.js"></script>
         <script src="~/lib/underscore/underscore.js"></script>
         <script src="~/js/utilities/bootstrapAlerts.js"></script>
+        <script src="~/js/site.js"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -94,6 +96,7 @@
         <script src="~/lib/datepicker/js/bootstrap-datepicker.min.js"></script>
         <script src="~/lib/underscore/underscore.min.js"></script>
         <script src="~/js/utilities/bootstrapAlerts.js"></script>
+        <script src="~/js/site.min.js"></script>
     </environment>
 
     @Html.Partial("_Alerts")

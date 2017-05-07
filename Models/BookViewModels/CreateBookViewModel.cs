@@ -8,7 +8,7 @@ namespace HomeLibrary.Models.BookViewModels
     {
         [HiddenInput]
         public int LibraryId {get;set;}
-
+        
         [Required]
         public string Title {get;set;}
 

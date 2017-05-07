@@ -7,7 +7,8 @@ namespace HomeLibrary.Repositories
     {
         void AddLibrary(Library library);
         Library GetLibraryByOwnerId(string userId);
-        Library GetLibraryById(int id);
+        Library GetLibraryById(int libraryId);
+        Book GetBookById(int bookId);
         IEnumerable<Library> GetOtherUserLibraries(string userId);
         void SaveChanges();
     }

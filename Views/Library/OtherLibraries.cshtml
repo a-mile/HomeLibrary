@@ -24,7 +24,7 @@
                     {
                         <div class="list-group-item">
                             <span class="pull-right text-muted">Liczba użytkowników: @library.UsersCount</span>
-                            <a asp-controller="Library" asp-action="GetLibrary" asp-route-libraryId="@library.LibraryId"><h4>@library.Owner library</h4></a>
+                            <a asp-controller="Library" asp-action="GetLibrary" asp-route-libraryId="@library.Id"><h4>@library.Owner library</h4></a>
                             
                             Liczba książek: @library.BooksCount
                             

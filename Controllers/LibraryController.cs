@@ -12,6 +12,7 @@ using HomeLibrary.Repositories;
 using HomeLibrary.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace HomeLibrary.Controllers
 {
@@ -73,6 +74,21 @@ namespace HomeLibrary.Controllers
             return View(otherLibrariesViewModels);
         }
 
+        public IActionResult GetBook(int bookId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var book = _libraryRepository.GetBookById(bookId);
+
+            if(book == null)
+                return View("Error");
+
+            if(book.Library.OwnerId != userId && !book.Library.Users.Where(x=>x.ApplicationUserId == userId).Any())
+                return View("Error");
+
+            var bookDetailsViewModel = _mapper.Map<BookDetailsViewModel>(book);
+
+            return View(bookDetailsViewModel);
+        }
         public IActionResult CreateBook(int libraryId)
         {
             CreateBookViewModel viewModel = new CreateBookViewModel()
@@ -106,7 +122,7 @@ namespace HomeLibrary.Controllers
                 
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.GetLibrary),new {libraryId = viewModel.LibraryId}).WithSuccess("Successfull added new book.");
+                return RedirectToAction(nameof(LibraryController.GetLibrary),new {Id = viewModel.LibraryId}).WithSuccess("Successfull added new book.");
             }
 
             return View(viewModel);

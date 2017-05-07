@@ -1,0 +1,22 @@
+@model BookDetailsViewModel
+
+@{
+    ViewData["Title"] = "Book details";
+    Layout = "_MainLayout";
+}
+
+
+<div class="row">
+    <div class="col-lg-12">
+    <h1 class="page-header">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+         <form class="form-horizontal" role="form">
+                @Html.EditorForModel()
+        </form>
+    </div>
+</div>
+

@@ -7,10 +7,17 @@
         {
             @Html.Hidden(prop.PropertyName)
         }
-        else
+        else if(prop.IsReadOnly)
         {
-            @if(prop.ModelType == typeof(bool))
-            {
+            @Html.BootstrapLabel(prop.DisplayName ?? prop.PropertyName)
+            <div class="col-md-10">
+                <p class="form-control-static">
+                    @Html.Display(prop.PropertyName)
+                </p>
+            </div>
+        }
+        else if(prop.ModelType == typeof(bool))
+        {
             <div class="col-md-offset-2 col-md-10">
                     <div class="checkbox">
                         <label for="@prop.PropertyName">
@@ -19,15 +26,14 @@
                         </label>
                     </div>
             </div>
-            }
-            else
-            {
-                @Html.BootstrapLabel(prop.DisplayName ?? prop.PropertyName)
-                <div class="col-md-10">
-                    @Html.Editor(prop.PropertyName)
-                    @Html.BootstrapValidationMessage(prop.PropertyName)
-                </div>
-            }
+        }
+        else
+        {
+            @Html.BootstrapLabel(prop.DisplayName ?? prop.PropertyName)
+            <div class="col-md-10">
+                @Html.Editor(prop.PropertyName)
+                @Html.BootstrapValidationMessage(prop.PropertyName)
+            </div>
         }
     </div>
 }

@@ -20,6 +20,15 @@ namespace HomeLibrary.Repositories
             _context.Libraries.Add(library);
         }
 
+        public Book GetBookById(int bookId)
+        {
+            return _context.Books.Where(x=>x.Id == bookId)
+                .Include(x=>x.Library)
+                    .ThenInclude(x=>x.Users)
+                .Include(x=>x.ApplicationUser)
+            .FirstOrDefault();
+        }
+
         public Library GetLibraryById(int id)
         {
              return _context.Libraries.Where(x=>x.Id == id)

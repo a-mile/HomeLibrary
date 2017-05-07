@@ -26,6 +26,7 @@ namespace HomeLibrary.Repositories
                 .Include(x=>x.Books)
                     .ThenInclude(x=>x.ApplicationUser)
                 .Include(x=>x.Users)
+                    .ThenInclude(x=>x.ApplicationUser)
                 .Include(x=>x.Invitations)
                 .FirstOrDefault();
         }
@@ -36,6 +37,7 @@ namespace HomeLibrary.Repositories
                 .Include(x=>x.Books)
                     .ThenInclude(x=>x.ApplicationUser)
                 .Include(x=>x.Users)
+                    .ThenInclude(x=>x.ApplicationUser)
                 .Include(x=>x.Invitations)
                 .FirstOrDefault();
         }

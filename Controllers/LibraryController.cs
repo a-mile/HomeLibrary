@@ -43,6 +43,10 @@ namespace HomeLibrary.Controllers
             if(libraryId == null)
             {
                 library = _libraryRepository.GetLibraryByOwnerId(userId);
+                
+                if(library == null)
+                    return View("Error");
+
                 ViewData["Title"] = "My library";
             }
             else
@@ -53,58 +57,20 @@ namespace HomeLibrary.Controllers
                     return View("Error");
 
                 ViewData["Title"] = library.Owner.UserName + " library";
-            }
+            }    
 
-            if(library == null)
-                return View("Error");
+            var libraryDetailsViewModel = _mapper.Map<LibraryDetailsViewModel>(library);
+            libraryDetailsViewModel.Owned = userId == library.OwnerId;
 
-            var libraryViewModel = new LibraryDetailsViewModel();
-
-            var books = new List<BookDetailsViewModel>();
-            var users = new List<LibraryUserDetailsViewModel>();
-
-            foreach(var user in library.Users.ToList())
-            {
-                var libraryUser = _userManager.FindByIdAsync(user.ApplicationUserId).Result;
-
-                if(libraryUser != null)
-                    users.Add(_mapper.Map<LibraryUserDetailsViewModel>(libraryUser));
-            }
-
-             foreach(var book in library.Books.ToList())
-            {
-                var bookViewModel = _mapper.Map<BookDetailsViewModel>(book);
-                bookViewModel.AddedBy = book.ApplicationUser.UserName;
-
-                books.Add(bookViewModel);
-            }
-
-            libraryViewModel.Users = users;
-            libraryViewModel.Books = books;
-            libraryViewModel.LibraryId = library.Id;
-            libraryViewModel.Owned = userId == library.OwnerId;
-
-            return View(libraryViewModel);
+            return View(libraryDetailsViewModel);
         }
 
         public IActionResult OtherLibraries()
         {
             var otherLibraries = _libraryRepository.GetOtherUserLibraries(_userManager.GetUserId(User));
+            var otherLibrariesViewModels = _mapper.Map<IEnumerable<LibrarySummaryViewModel>>(otherLibraries);
 
-            var libraryViewModels = new List<LibrarySummaryViewModel>();
-
-            foreach(var library in otherLibraries)
-            {
-                libraryViewModels.Add(new LibrarySummaryViewModel()
-                {
-                    LibraryId = library.Id,
-                    Owner = library.Owner.UserName,
-                    BooksCount = library.Books.Count(),
-                    UsersCount = library.Users.Count() + 1 
-                });
-            }
-
-            return View(libraryViewModels);
+            return View(otherLibrariesViewModels);
         }
 
         public IActionResult CreateBook(int libraryId)
@@ -137,6 +103,7 @@ namespace HomeLibrary.Controllers
                 newBook.LibraryId = library.Id;
 
                 library.Books.Add(newBook);
+                
                 _libraryRepository.SaveChanges();
 
                 return RedirectToAction(nameof(LibraryController.GetLibrary),new {libraryId = viewModel.LibraryId}).WithSuccess("Successfull added new book.");

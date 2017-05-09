@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HomeLibrary.Infrastructure.Alerts
@@ -24,6 +25,7 @@ namespace HomeLibrary.Infrastructure.Alerts
 
     		var alerts = tempData.GetAlerts();
     		alerts.Add(new Alert(AlertClass, Message));
+			tempData.SetAlerts(alerts);
 
     		await InnerResult.ExecuteResultAsync(context);
 		}

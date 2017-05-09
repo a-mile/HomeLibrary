@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -42,7 +43,6 @@ namespace HomeLibrary.Controllers
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-
             return View();
         }
 
@@ -126,7 +126,7 @@ namespace HomeLibrary.Controllers
             await _signInManager.SignOutAsync();
 
             return RedirectToAction(nameof(AccountController.Login)).WithSuccess("Successfully logged out.");
-        }
+        }       
 
         [HttpGet]
         [AllowAnonymous]

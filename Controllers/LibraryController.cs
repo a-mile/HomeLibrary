@@ -10,6 +10,7 @@ using HomeLibrary.Models.BookViewModels;
 using HomeLibrary.Models.LibraryViewModels;
 using HomeLibrary.Repositories;
 using HomeLibrary.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -164,6 +165,7 @@ namespace HomeLibrary.Controllers
             return View(viewModel);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmInvitation(string code, string email, int? libraryId)
         {
             if(code == null || email == null || libraryId == null)

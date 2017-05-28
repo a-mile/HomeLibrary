@@ -22,17 +22,25 @@ namespace HomeLibrary.Repositories
 
         public void LoanBookOutsideSystem(Book book)
         {
-            book.Loan = true;
-            book.LoanType = LoanType.OutsideSystem;
-            book.LoanDate = DateTime.Now;
+            Loan Loan = new Loan()
+            {
+                BookId = book.Id,
+                LoanDate = DateTime.Now,                
+            };
+
+            book.Loans.Add(Loan);
         }
 
         public void LoanBookInsideSystem(Book book, string userId)
         {
-            book.Loan = true;
-            book.LoanType = LoanType.InsideSystem;
-            book.LoanForUserId = userId;
-            book.LoanDate = DateTime.Now;
+            Loan Loan = new Loan()
+            {
+                BookId = book.Id,
+                UserId = userId,
+                LoanDate = DateTime.Now,                
+            };
+            
+            book.Loans.Add(Loan);            
         }
 
         public Library GetLibraryById(int libraryId)

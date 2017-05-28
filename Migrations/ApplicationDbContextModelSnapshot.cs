@@ -82,19 +82,9 @@ namespace HomeLibrary.Migrations
 
                     b.Property<int>("LibraryId");
 
-                    b.Property<bool>("Loan");
-
-                    b.Property<DateTime>("LoanDate");
-
-                    b.Property<string>("LoanForUserId");
-
-                    b.Property<int>("LoanType");
-
                     b.Property<string>("Publisher");
 
                     b.Property<DateTime>("RelaseDate");
-
-                    b.Property<DateTime>("ReturnDate");
 
                     b.Property<string>("Title");
 
@@ -103,8 +93,6 @@ namespace HomeLibrary.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("LibraryId");
-
-                    b.HasIndex("LoanForUserId");
 
                     b.ToTable("Books");
                 });
@@ -153,6 +141,28 @@ namespace HomeLibrary.Migrations
                     b.HasIndex("LibraryId");
 
                     b.ToTable("UserLibraries");
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Loan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BookId");
+
+                    b.Property<DateTime>("LoanDate");
+
+                    b.Property<DateTime>("ReturnDate");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Loan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -272,10 +282,6 @@ namespace HomeLibrary.Migrations
                         .WithMany("Books")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("HomeLibrary.Models.ApplicationUser", "LoanForUser")
-                        .WithMany()
-                        .HasForeignKey("LoanForUserId");
                 });
 
             modelBuilder.Entity("HomeLibrary.Models.Invitation", b =>
@@ -301,9 +307,21 @@ namespace HomeLibrary.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("HomeLibrary.Models.Library", "Library")
-                        .WithMany("LibraryUsers")
+                        .WithMany("Users")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HomeLibrary.Models.Loan", b =>
+                {
+                    b.HasOne("HomeLibrary.Models.Book", "Book")
+                        .WithMany("Loans")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HomeLibrary.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

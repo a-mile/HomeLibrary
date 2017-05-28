@@ -178,13 +178,8 @@ namespace HomeLibrary.Migrations
                     ISBN = table.Column<string>(nullable: true),
                     Language = table.Column<string>(nullable: true),
                     LibraryId = table.Column<int>(nullable: false),
-                    Loan = table.Column<bool>(nullable: false),
-                    LoanDate = table.Column<DateTime>(nullable: false),
-                    LoanForUserId = table.Column<string>(nullable: true),
-                    LoanType = table.Column<int>(nullable: false),
                     Publisher = table.Column<string>(nullable: true),
                     RelaseDate = table.Column<DateTime>(nullable: false),
-                    ReturnDate = table.Column<DateTime>(nullable: false),
                     Title = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -202,12 +197,6 @@ namespace HomeLibrary.Migrations
                         principalTable: "Libraries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Books_AspNetUsers_LoanForUserId",
-                        column: x => x.LoanForUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,6 +244,34 @@ namespace HomeLibrary.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Loan",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    BookId = table.Column<int>(nullable: false),
+                    LoanDate = table.Column<DateTime>(nullable: false),
+                    ReturnDate = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Loan", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Loan_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Loan_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
@@ -277,11 +294,6 @@ namespace HomeLibrary.Migrations
                 column: "LibraryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Books_LoanForUserId",
-                table: "Books",
-                column: "LoanForUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Invitations_LibraryId",
                 table: "Invitations",
                 column: "LibraryId");
@@ -296,6 +308,16 @@ namespace HomeLibrary.Migrations
                 name: "IX_UserLibraries_LibraryId",
                 table: "UserLibraries",
                 column: "LibraryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Loan_BookId",
+                table: "Loan",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Loan_UserId",
+                table: "Loan",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
@@ -327,13 +349,13 @@ namespace HomeLibrary.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Books");
-
-            migrationBuilder.DropTable(
                 name: "Invitations");
 
             migrationBuilder.DropTable(
                 name: "UserLibraries");
+
+            migrationBuilder.DropTable(
+                name: "Loan");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -351,10 +373,13 @@ namespace HomeLibrary.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Libraries");
+                name: "Books");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Libraries");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

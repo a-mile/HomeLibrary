@@ -8,7 +8,7 @@ using HomeLibrary.Models;
 namespace HomeLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170504134719_Initial")]
+    [Migration("20170510152653_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,9 +83,19 @@ namespace HomeLibrary.Migrations
 
                     b.Property<int>("LibraryId");
 
+                    b.Property<bool>("Loan");
+
+                    b.Property<DateTime>("LoanDate");
+
+                    b.Property<string>("LoanForUserId");
+
+                    b.Property<int>("LoanType");
+
                     b.Property<string>("Publisher");
 
                     b.Property<DateTime>("RelaseDate");
+
+                    b.Property<DateTime>("ReturnDate");
 
                     b.Property<string>("Title");
 
@@ -94,6 +104,8 @@ namespace HomeLibrary.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("LibraryId");
+
+                    b.HasIndex("LoanForUserId");
 
                     b.ToTable("Books");
                 });
@@ -131,7 +143,7 @@ namespace HomeLibrary.Migrations
                     b.ToTable("Libraries");
                 });
 
-            modelBuilder.Entity("HomeLibrary.Models.UserLibrary", b =>
+            modelBuilder.Entity("HomeLibrary.Models.LibraryUser", b =>
                 {
                     b.Property<string>("ApplicationUserId");
 
@@ -261,6 +273,10 @@ namespace HomeLibrary.Migrations
                         .WithMany("Books")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HomeLibrary.Models.ApplicationUser", "LoanForUser")
+                        .WithMany()
+                        .HasForeignKey("LoanForUserId");
                 });
 
             modelBuilder.Entity("HomeLibrary.Models.Invitation", b =>
@@ -278,15 +294,15 @@ namespace HomeLibrary.Migrations
                         .HasForeignKey("HomeLibrary.Models.Library", "OwnerId");
                 });
 
-            modelBuilder.Entity("HomeLibrary.Models.UserLibrary", b =>
+            modelBuilder.Entity("HomeLibrary.Models.LibraryUser", b =>
                 {
                     b.HasOne("HomeLibrary.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Libraries")
+                        .WithMany("OtherLibraries")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("HomeLibrary.Models.Library", "Library")
-                        .WithMany("Users")
+                        .WithMany("LibraryUsers")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -23,7 +23,7 @@
                     {
                         <div class="list-group-item">
                             <span class="pull-right text-muted">Dodana przez: @book.AddedBy</span>
-                            <a asp-controller="Library" asp-action="GetBook" asp-route-bookId="@book.Id"><h4>@book.Title</h4></a>
+                            <a asp-controller="Book" asp-action="GetBook" asp-route-bookId="@book.Id"><h4>@book.Title</h4></a>
                             
                             @book.Author
                             
@@ -34,7 +34,7 @@
                         @: You haven't any books.
                     }
                 </div>
-                <a class="btn btn-default btn-block" asp-controller="Library" asp-action="CreateBook" asp-route-libraryId="@Model.Id">Create book</a>
+                <a class="btn btn-default btn-block" asp-controller="Book" asp-action="CreateBook" asp-route-libraryId="@Model.Id">Create book</a>
             </div>
         </div>
     </div>

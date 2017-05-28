@@ -88,7 +88,7 @@ namespace HomeLibrary.Data
                 Email = "email@email.com"
             });
 
-            _context.UserLibraries.Add(new UserLibrary()
+            _context.UserLibraries.Add(new LibraryUser()
             {
                 LibraryId = amadiLibrary.Id,
                 ApplicationUserId = jan.Id

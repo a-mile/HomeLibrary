@@ -11,6 +11,6 @@ namespace HomeLibrary.Models
         public DateTime RegisterDate {get;set;}
 
         public Library OwnLibrary {get; set;}
-        public List<UserLibrary> Libraries {get;set;}
+        public List<LibraryUser> OtherLibraries {get;set;}
     }
 }

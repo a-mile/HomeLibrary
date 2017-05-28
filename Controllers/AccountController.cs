@@ -65,6 +65,7 @@ namespace HomeLibrary.Controllers
                     }
 
                     var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+
                     if (result.Succeeded)
                     {
                         return RedirectToLocal(returnUrl);
@@ -108,7 +109,7 @@ namespace HomeLibrary.Controllers
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this link:" + callbackUrl);
+                        "Please confirm your account by clicking this link: " + callbackUrl);
 
                     return RedirectToAction(nameof(AccountController.Login)).WithInfo("Please confirm your account by clicking on link we are send to your email.");
                 }

@@ -7,6 +7,7 @@ namespace HomeLibrary.Models.LibraryViewModels
     {
         public int Id {get;set;}
         public bool Owned {get;set;}
+        public string Owner {get;set;}
         public IEnumerable<BookDetailsViewModel> Books {get; set;}
         public IEnumerable<LibraryUserDetailsViewModel> Users {get;set;}
     }

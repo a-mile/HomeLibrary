@@ -19,114 +19,49 @@ namespace HomeLibrary.Controllers
 {
     public class LibraryController : Controller
     {
-        private readonly IMapper _mapper;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMapper _mapper;        
         private readonly ILibraryRepository _libraryRepository;
         private readonly IEmailSender _emailSender;
         private readonly InvitationTokenProvider _tokenProvider;
+        private readonly ICurrentUser _currentUser;
 
-        public LibraryController(IMapper mapper, UserManager<ApplicationUser> userManager, 
-                                 ILibraryRepository libraryRepository, IEmailSender emailSender, 
-                                 InvitationTokenProvider tokenProvider)
+        public LibraryController(IMapper mapper, ILibraryRepository libraryRepository, 
+                                 IEmailSender emailSender, InvitationTokenProvider tokenProvider, ICurrentUser currentUser)
         {
-            _mapper = mapper;
-            _userManager = userManager;
+            _mapper = mapper;            
             _libraryRepository = libraryRepository;
             _emailSender = emailSender;
             _tokenProvider = tokenProvider;
-        }
+            _currentUser = currentUser;
+        }     
 
-        public IActionResult GetLibrary(int? libraryId)
+        public IActionResult OwnLibrary()
         {
-            var userId = _userManager.GetUserId(User);
+            var library = _libraryRepository.GetLibraryByOwnerId(_currentUser.User.Id);
 
-            Library library;
+            return RedirectToAction(nameof(LibraryController.GetLibrary), new {libraryId = library.Id});
+        }   
 
-            if(libraryId == null)
-            {
-                library = _libraryRepository.GetLibraryByOwnerId(userId);
-                
-                if(library == null)
-                    return View("Error");
+        public IActionResult GetLibrary(int libraryId)
+        {          
+            var userLibraries = _libraryRepository.GetAllUserLibraries(_currentUser.User.Id).ToList();
+            var library = userLibraries.Where(x=>x.Id == libraryId).FirstOrDefault();
 
-                ViewData["Title"] = "My library";
-            }
-            else
-            {
-                library = _libraryRepository.GetLibraryById(libraryId.Value);
+            if(library == null)
+                return View("Error");                       
 
-                if(library == null || !library.Users.Where(x=>x.ApplicationUserId == userId).Any())
-                    return View("Error");
-
-                ViewData["Title"] = library.Owner.UserName + " library";
-            }    
-
-            var libraryDetailsViewModel = _mapper.Map<LibraryDetailsViewModel>(library);
-            libraryDetailsViewModel.Owned = userId == library.OwnerId;
+            var libraryDetailsViewModel = _mapper.Map<LibraryDetailsViewModel>(library); 
+            libraryDetailsViewModel.Owned = library.OwnerId == _currentUser.User.Id;           
 
             return View(libraryDetailsViewModel);
         }
 
         public IActionResult OtherLibraries()
         {
-            var otherLibraries = _libraryRepository.GetOtherUserLibraries(_userManager.GetUserId(User));
+            var otherLibraries = _libraryRepository.GetOtherUserLibraries(_currentUser.User.Id);
             var otherLibrariesViewModels = _mapper.Map<IEnumerable<LibrarySummaryViewModel>>(otherLibraries);
 
             return View(otherLibrariesViewModels);
-        }
-
-        public IActionResult GetBook(int bookId)
-        {
-            var userId = _userManager.GetUserId(User);
-            var book = _libraryRepository.GetBookById(bookId);
-
-            if(book == null)
-                return View("Error");
-
-            if(book.Library.OwnerId != userId && !book.Library.Users.Where(x=>x.ApplicationUserId == userId).Any())
-                return View("Error");
-
-            var bookDetailsViewModel = _mapper.Map<BookDetailsViewModel>(book);
-
-            return View(bookDetailsViewModel);
-        }
-        public IActionResult CreateBook(int libraryId)
-        {
-            CreateBookViewModel viewModel = new CreateBookViewModel()
-            {
-                LibraryId = libraryId
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public IActionResult CreateBook(CreateBookViewModel viewModel)
-        {
-            var userId = _userManager.GetUserId(User);
-            var library = _libraryRepository.GetLibraryById(viewModel.LibraryId);
-
-            if(library == null)
-                return View("Error");    
-
-            if(library.OwnerId != userId && !library.Users.Where(x=>x.ApplicationUserId == userId).Any())
-                return View("Error"); 
-
-            if (ModelState.IsValid)
-            {
-                var newBook = _mapper.Map<Book>(viewModel);
-
-                newBook.ApplicationUserId = userId;
-                newBook.LibraryId = library.Id;
-
-                library.Books.Add(newBook);
-                
-                _libraryRepository.SaveChanges();
-
-                return RedirectToAction(nameof(LibraryController.GetLibrary),new {Id = viewModel.LibraryId}).WithSuccess("Successfull added new book.");
-            }
-
-            return View(viewModel);
         }
 
         public IActionResult InviteUser()
@@ -139,7 +74,7 @@ namespace HomeLibrary.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userLibrary =  _libraryRepository.GetLibraryByOwnerId(_userManager.GetUserId(User));
+                var userLibrary =  _libraryRepository.GetLibraryByOwnerId(_currentUser.User.Id);
 
                 var invitation = new Invitation()
                 {
@@ -152,8 +87,9 @@ namespace HomeLibrary.Controllers
 
                 var callbackUrl = Url.Action("ConfirmInvitation", "Library", new { email = viewModel.Email, code = code, libraryId = invitation.LibraryId }, protocol: HttpContext.Request.Scheme);
 
-                await _emailSender.SendEmailAsync(viewModel.Email, "Home Library invitation link", $"{_userManager.GetUserName(User)} invited you to his home library please click link below" 
-                 + "to confirm invitation : "+ callbackUrl);         
+                await _emailSender.SendEmailAsync(viewModel.Email, "Home Library invitation link", 
+                    $"{_currentUser.User.Id} invited you to his home library please click link below to confirm invitation : " + 
+                        callbackUrl);         
 
                 userLibrary.Invitations.Add(invitation);
 
@@ -166,19 +102,18 @@ namespace HomeLibrary.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmInvitation(string code, string email, int? libraryId)
+        public IActionResult ConfirmInvitation(string code, string email, int? libraryId)
         {
             if(code == null || email == null || libraryId == null)
             {
                 return View("Error");
-            }
+            }      
 
-            var user = await _userManager.FindByEmailAsync(email);
+            if(!User.Identity.IsAuthenticated)   
+                return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You have to sign in account first.");   
 
-            if(user == null)
-            {
-                return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You have to register home library account first.");
-            }
+            if(_currentUser.User.Email != email)            
+                return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You account is registered with other email than the one invitation sended to.");            
 
             var result = _tokenProvider.Validate(code, email);
 
@@ -194,9 +129,9 @@ namespace HomeLibrary.Controllers
                     {
                         library.Invitations.Remove(invitation);
 
-                        var userLibrary = new UserLibrary()
+                        var userLibrary = new LibraryUser()
                         {
-                            ApplicationUserId = user.Id,
+                            ApplicationUserId = _currentUser.User.Id,
                             LibraryId = library.Id
                         };
 

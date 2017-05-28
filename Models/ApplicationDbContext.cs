@@ -14,19 +14,19 @@ namespace HomeLibrary.Models
         public DbSet<Library> Libraries {get;set;}
         public DbSet<Book> Books {get;set;}
         public DbSet<Invitation> Invitations {get;set;}
-        public DbSet<UserLibrary> UserLibraries {get;set;}
+        public DbSet<LibraryUser> UserLibraries {get;set;}        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<UserLibrary>()
+            builder.Entity<LibraryUser>()
             .HasKey(u => new { u.ApplicationUserId, u.LibraryId });
 
-            builder.Entity<UserLibrary>()
+            builder.Entity<LibraryUser>()
             .HasOne(ul => ul.ApplicationUser)
-            .WithMany(u => u.Libraries)
+            .WithMany(u => u.OtherLibraries)
             .HasForeignKey(ul => ul.ApplicationUserId);
 
-            builder.Entity<UserLibrary>()
+            builder.Entity<LibraryUser>()
             .HasOne(ul => ul.Library)
             .WithMany(u => u.Users)
             .HasForeignKey(ul => ul.LibraryId);

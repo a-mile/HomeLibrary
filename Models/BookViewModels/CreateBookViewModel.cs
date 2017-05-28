@@ -8,6 +8,9 @@ namespace HomeLibrary.Models.BookViewModels
     {
         [HiddenInput]
         public int LibraryId {get;set;}
+
+        [HiddenInput]
+        public string ApplicationUserId {get;set;}
         
         [Required]
         public string Title {get;set;}

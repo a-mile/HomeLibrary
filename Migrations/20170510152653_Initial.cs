@@ -178,8 +178,13 @@ namespace HomeLibrary.Migrations
                     ISBN = table.Column<string>(nullable: true),
                     Language = table.Column<string>(nullable: true),
                     LibraryId = table.Column<int>(nullable: false),
+                    Loan = table.Column<bool>(nullable: false),
+                    LoanDate = table.Column<DateTime>(nullable: false),
+                    LoanForUserId = table.Column<string>(nullable: true),
+                    LoanType = table.Column<int>(nullable: false),
                     Publisher = table.Column<string>(nullable: true),
                     RelaseDate = table.Column<DateTime>(nullable: false),
+                    ReturnDate = table.Column<DateTime>(nullable: false),
                     Title = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -197,6 +202,12 @@ namespace HomeLibrary.Migrations
                         principalTable: "Libraries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Books_AspNetUsers_LoanForUserId",
+                        column: x => x.LoanForUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -264,6 +275,11 @@ namespace HomeLibrary.Migrations
                 name: "IX_Books_LibraryId",
                 table: "Books",
                 column: "LibraryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_LoanForUserId",
+                table: "Books",
+                column: "LoanForUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invitations_LibraryId",

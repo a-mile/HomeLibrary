@@ -11,7 +11,7 @@ namespace HomeLibrary.Infrastructure
         public MappingProfile()
         {
             CreateMap<ApplicationUser, LibraryUserDetailsViewModel>();
-            CreateMap<UserLibrary, LibraryUserDetailsViewModel>()
+            CreateMap<LibraryUser, LibraryUserDetailsViewModel>()
                 .ConstructProjectionUsing(x=> Mapper.Map<LibraryUserDetailsViewModel>(x.ApplicationUser));
             CreateMap<Book, BookDetailsViewModel>()
                 .ForMember(dest => dest.AddedBy, opt => opt.MapFrom(src => src.ApplicationUser.UserName));

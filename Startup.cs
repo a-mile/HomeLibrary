@@ -19,6 +19,7 @@ using Autofac.Extensions.DependencyInjection;
 using HomeLibrary.Infrastructure;
 using AutoMapper;
 using HomeLibrary.Data;
+using System.Security.Claims;
 
 namespace HomeLibrary
 {
@@ -75,7 +76,7 @@ namespace HomeLibrary
             builder.Populate(services);
             builder.RegisterAssemblyTypes(assembly);
             builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();  
-            builder.RegisterType<MailKitEmailSender>().As<IEmailSender>();  
+            builder.RegisterType<MailKitEmailSender>().As<IEmailSender>();              
 
             ApplicationContainer = builder.Build();
 

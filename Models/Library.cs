@@ -13,7 +13,7 @@ namespace HomeLibrary.Models
         [ForeignKey("OwnerId")]
         public ApplicationUser Owner {get;set;}
 
-        public List<UserLibrary> Users {get;set;}
+        public List<LibraryUser> Users {get;set;}
         public List<Book> Books {get;set;}
         public List<Invitation> Invitations {get;set;}
     }

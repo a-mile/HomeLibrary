@@ -109,7 +109,7 @@ namespace HomeLibrary
             app.UseHangfireServer();
             app.UseHangfireDashboard();
 
-            RecurringJob.AddOrUpdate<AccountCleaner>(
+            RecurringJob.AddOrUpdate<DatabaseCleaner>(
                 x=>x.DeleteUnconfirmedAccounts(), Cron.Hourly);
 
             app.UseMvc(routes =>

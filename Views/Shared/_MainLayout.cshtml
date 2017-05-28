@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["PageTitle"]</title>
 
     <environment names="Development">
         
@@ -74,6 +74,11 @@
 
          <div id="page-wrapper">
              <div class="container alert-container"></div>
+             <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">@ViewData["PageTitle"]</h1>
+                </div>
+             </div>
              @RenderBody()
          </div>
     </div>

@@ -4,11 +4,11 @@ using HomeLibrary.Models;
 
 namespace HomeLibrary.Services
 {
-    public class AccountCleaner
+    public class DatabaseCleaner
     {
         private readonly ApplicationDbContext _context;
 
-        public AccountCleaner(ApplicationDbContext context)
+        public DatabaseCleaner(ApplicationDbContext context)
         {
             _context = context;
         }

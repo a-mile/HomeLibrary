@@ -88,11 +88,10 @@ namespace HomeLibrary.Controllers
                 var callbackUrl = Url.Action("ConfirmInvitation", "Library", new { email = viewModel.Email, code = code, libraryId = invitation.LibraryId }, protocol: HttpContext.Request.Scheme);
 
                 await _emailSender.SendEmailAsync(viewModel.Email, "Home Library invitation link", 
-                    $"{_currentUser.User.Id} invited you to his home library please click link below to confirm invitation : " + 
+                    $"{_currentUser.User.Id} invited you to his home library. Please click link below to confirm invitation : " + 
                         callbackUrl);         
 
                 userLibrary.Invitations.Add(invitation);
-
                 _libraryRepository.SaveChanges();
 
                 return RedirectToAction(nameof(LibraryController.GetLibrary)).WithSuccess("Invitation sended.");
@@ -110,7 +109,7 @@ namespace HomeLibrary.Controllers
             }      
 
             if(!User.Identity.IsAuthenticated)   
-                return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You have to sign in account first.");   
+                return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You have to sign in to account first.");   
 
             if(_currentUser.User.Email != email)            
                 return RedirectToAction("Account",nameof(AccountController.Register)).WithInfo("You account is registered with other email than the one invitation sended to.");            
@@ -129,14 +128,13 @@ namespace HomeLibrary.Controllers
                     {
                         library.Invitations.Remove(invitation);
 
-                        var userLibrary = new LibraryUser()
+                        var libraryUser = new LibraryUser()
                         {
                             ApplicationUserId = _currentUser.User.Id,
                             LibraryId = library.Id
                         };
 
-                        library.Users.Add(userLibrary);
-
+                        library.Users.Add(libraryUser);
                         _libraryRepository.SaveChanges();
 
                         return RedirectToAction(nameof(LibraryController.GetLibrary)).WithSuccess("Invitation confirmed.");

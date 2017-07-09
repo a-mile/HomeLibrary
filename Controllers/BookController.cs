@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using AutoMapper;
 using HomeLibrary.Infrastructure;
@@ -6,7 +5,6 @@ using HomeLibrary.Infrastructure.Alerts;
 using HomeLibrary.Models;
 using HomeLibrary.Models.BookViewModels;
 using HomeLibrary.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeLibrary.Controllers
@@ -68,11 +66,10 @@ namespace HomeLibrary.Controllers
             {
                 var newBook = _mapper.Map<Book>(viewModel);
 
-                library.Books.Add(newBook);
-                
+                library.Books.Add(newBook);                
                 _libraryRepository.SaveChanges();
 
-                return RedirectToAction(nameof(LibraryController.GetLibrary),new {Id = viewModel.LibraryId}).WithSuccess("Successfull added new book.");
+                return RedirectToAction(nameof(LibraryController.GetLibrary),new {Id = viewModel.LibraryId}).WithSuccess("Successfully added new book.");
             }
 
             return View(viewModel);
@@ -90,7 +87,7 @@ namespace HomeLibrary.Controllers
             _libraryRepository.LoanBookOutsideSystem(book);
             _libraryRepository.SaveChanges();
 
-            return RedirectToAction(nameof(LibraryController.GetLibrary),new {libraryId = book.LibraryId}).WithSuccess("Successfull book loan");
+            return RedirectToAction(nameof(LibraryController.GetLibrary),new {libraryId = book.LibraryId}).WithSuccess("Successfully loaned book.");
         }
     }
 }

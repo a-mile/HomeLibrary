@@ -49,22 +49,22 @@ namespace HomeLibrary.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel viewModel, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var user = await _userManager.FindByEmailAsync(viewModel.Email);
 
                 if (user != null)
                 {
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        return View(model).WithError("You must have a confirmed email to log in.");
+                        return View(viewModel).WithError("Your email address is not confirmed.");
                     }
 
-                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    var result = await _signInManager.PasswordSignInAsync(user, viewModel.Password, viewModel.RememberMe, lockoutOnFailure: false);
 
                     if (result.Succeeded)
                     {
@@ -72,14 +72,14 @@ namespace HomeLibrary.Controllers
                     }
                     else
                     {
-                        return View(model).WithError("Invalid login attempt.");
+                        return View(viewModel).WithError("Invalid login attempt.");
                     }
                 }
 
-                return View(model).WithError("Invalid login attempt.");
+                return View(viewModel).WithError("Invalid login attempt.");
             }
 
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpGet]
@@ -94,22 +94,22 @@ namespace HomeLibrary.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(RegisterViewModel viewModel, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, RegisterDate = DateTime.Now };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var user = new ApplicationUser { UserName = viewModel.UserName, Email = viewModel.Email, RegisterDate = DateTime.Now };
+                var result = await _userManager.CreateAsync(user, viewModel.Password);
 
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this link: " + callbackUrl);
+                    await _emailSender.SendEmailAsync(viewModel.Email, "Confirm your account",
+                        "Please confirm your account by clicking on this link: " + callbackUrl);
 
                     return RedirectToAction(nameof(AccountController.Login)).WithInfo("Please confirm your account by clicking on link we are send to your email.");
                 }
@@ -117,7 +117,7 @@ namespace HomeLibrary.Controllers
                 AddErrors(result);
             }
 
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -126,7 +126,7 @@ namespace HomeLibrary.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            return RedirectToAction(nameof(AccountController.Login)).WithSuccess("Successfully logged out.");
+            return RedirectToAction(nameof(AccountController.Login)).WithSuccess("Successfully logged off.");
         }       
 
         [HttpGet]
@@ -157,7 +157,7 @@ namespace HomeLibrary.Controllers
                 _libraryRepository.AddLibrary(userLibrary);
                 _libraryRepository.SaveChanges();
 
-                 return RedirectToAction(nameof(AccountController.Login)).WithSuccess("You account is confirmed. You can sing in now.");
+                 return RedirectToAction(nameof(AccountController.Login)).WithSuccess("You account is confirmed. You can sign in now.");
             }
 
             return View("Error");

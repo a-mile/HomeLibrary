@@ -6,6 +6,8 @@
     "metisMenu": "latest",
     "sb-admin-2": "latest",
     "Font-Awesome": "latest",
-    "underscore": "latest"
+    "underscore": "latest",
+    "jquery": "latest",
+    "bootstrap-datepicker": "latest"
   }
 }

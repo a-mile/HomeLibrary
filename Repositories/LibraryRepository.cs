@@ -74,6 +74,7 @@ namespace HomeLibrary.Repositories
             return _context.Books
                     .Include(x=>x.Library)
                         .ThenInclude(x=>x.Users)
+                    .Include(x=>x.ApplicationUser)
                     .Where(x=>x.Library.OwnerId == userId ||
                         x.Library.Users.Where(y=>y.ApplicationUserId == userId).Any());
         }       

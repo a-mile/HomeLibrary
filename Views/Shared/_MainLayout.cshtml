@@ -6,23 +6,21 @@
     <title>@ViewData["PageTitle"]</title>
 
     <environment names="Development">
-        
-        <link rel="stylesheet" href="~/css/reset.css" />
+                
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css"/>
         <link rel="stylesheet" href="~/lib/metisMenu/dist/metisMenu.css"/>
         <link rel="stylesheet" href="~/lib/sb-admin-2/css/sb-admin-2.css"/>
         <link rel="stylesheet" href="~/lib/Font-Awesome/css/font-awesome.css"/>
-        <link rel="stylesheet" href="~/lib/datepicker/css/bootstrap-datepicker.css"/>
+        <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.css"/>
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
-       
-        <link rel="stylesheet" href="~/css/reset.css" />
+               
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="~/lib/metisMenu/dist/metisMenu.min.css"/>
-        <link rel="stylesheet" href="~/lib/sb-admin-2/css/sb-admin-2.min.css"/>
+        <link rel="stylesheet" href="~/lib/sb-admin-2/css/sb-admin-2.css"/>
         <link rel="stylesheet" href="~/lib/Font-Awesome/css/font-awesome.min.css"/>
-        <link rel="stylesheet" href="~/lib/datepicker/css/bootstrap-datepicker.min.css"/>
+        <link rel="stylesheet" href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"/>
         <link rel="stylesheet" href="~/css/site.min.css"/>
     </environment>
 </head>
@@ -88,20 +86,18 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/metisMenu/dist/metisMenu.js"></script>
         <script src="~/lib/sb-admin-2/js/sb-admin-2.js"></script>
-        <script src="~/lib/datepicker/js/bootstrap-datepicker.js"></script>
+        <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
         <script src="~/lib/underscore/underscore.js"></script>
-        <script src="~/js/utilities/bootstrapAlerts.js"></script>
-        <script src="~/js/site.js"></script>
+        <script src="~/js/utilities/bootstrapAlerts.js"></script>        
     </environment>
     <environment names="Staging,Production">
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="~/lib/metisMenu/dist/metisMenu.min.js"></script>
         <script src="~/lib/sb-admin-2/js/sb-admin-2.js"></script>
-        <script src="~/lib/datepicker/js/bootstrap-datepicker.min.js"></script>
-        <script src="~/lib/underscore/underscore.min.js"></script>
-        <script src="~/js/utilities/bootstrapAlerts.js"></script>
-        <script src="~/js/site.min.js"></script>
+        <script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+        <script src="~/lib/underscore/underscore-min.js"></script>
+        <script src="~/js/utilities/bootstrapAlerts.js"></script>        
     </environment>
 
     @Html.Partial("_Alerts")

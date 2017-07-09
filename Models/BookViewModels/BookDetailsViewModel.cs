@@ -11,6 +11,7 @@ namespace HomeLibrary.Models.BookViewModels
         public int Id {get;set;}
 
         [Editable(false)]
+        [Display(Name = "Added by")] 
         public string AddedBy {get;set;}
 
         [Editable(false)]
@@ -23,6 +24,7 @@ namespace HomeLibrary.Models.BookViewModels
         public string Publisher {get;set;}
 
         [Editable(false)]
+        [Display(Name = "Relase date")] 
         public DateTime RelaseDate {get;set;}
 
         [Editable(false)]
